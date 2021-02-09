@@ -1,0 +1,102 @@
+#include<stdio.h>
+#include<string.h>
+#define DELIM_BIT_PATTERN "01111110"
+#define SNDR_INPUT 0
+#define SNDR_OUTPUT 1
+#define REC_INPUT 2
+#define REC_OUTPUT 3
+
+char data[4][100];
+
+int valid_data(void);
+void sender_bit_stuff(void);
+void receiver_process_data(void);
+
+int main()
+{
+	int ans;
+	do
+    {
+        printf("\nEnter Data from Netwrok Layer in Binary Form:");
+        scanf("%s",data[SNDR_INPUT]);
+        if(!valid_data())
+            continue;
+        sender_bit_stuff();
+        printf("\nSenders Physical Layer Data:%s\n",data[SNDR_OUTPUT]);
+        strcpy(data[REC_INPUT],data[SNDR_OUTPUT]);
+        receiver_process_data();
+        printf("\nReceiver's Network Layer Data: %s\n",data[REC_OUTPUT]);
+        printf("\n\nDo you want to continue?(y: 1/n: 0)");
+        scanf("%d",&ans);
+	}while(ans!=0);
+}
+
+
+int valid_data()
+{
+	char *p=data[SNDR_INPUT];
+    if(*p=='\0')
+    {
+		printf("\n***Enter Some Data***\n");
+		return 0;
+	}
+	while(*p!='\0')
+	{
+		if(*p!='1'&&*p!='0')
+            printf("** this is not binary data. please Enter 0's and 1's\n");
+		p++;
+	}
+    return 1;
+}
+
+void sender_bit_stuff(void)
+{
+	char *src=data[SNDR_INPUT];
+	char *dst=data[SNDR_OUTPUT];
+	int count=0;
+	strcpy(dst,DELIM_BIT_PATTERN);
+	dst+=strlen(DELIM_BIT_PATTERN);
+	while(*src!='\0')
+	{
+		if(count==5){
+			*dst='0';
+			dst+=1;
+			count=0;
+		}
+		if(*src=='1')
+			count++;
+		else
+			count=0;
+		*dst++=*src++;
+	}
+	if(*src=='\0' && count==5){
+		*dst='0';
+		dst+=1;
+	}
+	strcpy(dst,DELIM_BIT_PATTERN);
+	dst+=strlen(DELIM_BIT_PATTERN);
+	*dst='\0';
+}
+
+
+void receiver_process_data(void)
+{
+	char *src=data[REC_INPUT];
+	char *dst=data[REC_OUTPUT];
+    char *end;
+	int count=0;
+	src+=strlen(DELIM_BIT_PATTERN);
+	end=data[REC_INPUT]+strlen(data[REC_INPUT])-strlen(DELIM_BIT_PATTERN);
+	while(src<=end)
+	{
+		if(count==5)
+			src+=1;
+			count=0;
+		if(*src=='1')
+			count++;
+		else
+			count=0;
+		*dst++=*src++;
+	}
+	*(dst-1)='\0';
+}

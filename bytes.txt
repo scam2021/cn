@@ -1,0 +1,41 @@
+#include<stdio.h>
+#include<string.h>
+#define FLAG_BYTE "$"
+#define ESCAPE_BYTE "#"
+void byte_stuff();
+char in_buf[100];
+char out_buf[100];
+int main()
+{
+	int ans;
+	do
+    	{
+        		in_buf[0]='\0';
+       		 out_buf[0]='\0';
+        		printf("\nFLAG_BYTE:$,ESC_BYTE:#\n");
+        		printf("\nEnter the data from Network Layer:");
+        		scanf("%s",in_buf);
+        		byte_stuff();
+        		printf("\nData to the physical Layer:%s",out_buf);
+        		printf("\nDo you want to continue?(y:1/n:0):");
+        		scanf("%d",&ans);
+	}while(ans!=0);
+    	return 0;
+}
+void byte_stuff(void)
+{
+	int i=0,j=1;
+	out_buf[0]='$';
+	for(;in_buf[i]!='\0';i++,j++)
+	{
+		if(in_buf[i]!='$'&&in_buf[i]!='#')
+			out_buf[j]=in_buf[i];
+		else
+        		{
+			out_buf[j++]='#';
+			out_buf[j]=in_buf[i];
+		}
+	}
+	out_buf[j]='$';
+	out_buf[j++]='\0';
+}
